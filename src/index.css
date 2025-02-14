@@ -1,0 +1,188 @@
+/* :root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+} */
+
+/* Global Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #fffaf0; /* Warm, homely background */
+  color: #4a4a4a;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header Styling */
+header {
+  color: rgb(102, 102, 95);
+  background-color: #e7ddb0; /* Warm yellow-orange */
+  padding: 1rem;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 10px 4px 20px rgba(34, 151, 32, 0.1);
+  height: 40px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+
+nav ul li {
+  display: inline;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #4a4a4a;
+  font-weight: bold;
+  transition: color 0.3s ease-in-out;
+}
+
+nav ul li a:hover {
+  color: #d35400; /* Deep orange */
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 4rem 1rem;
+  background: url('/images/kitchen-bg.jpg') no-repeat center center/cover;
+  color: white;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.hero p {
+  font-size: 1.2rem;
+}
+
+.hero-page-text{
+  color: hsl(25, 60%, 4%);
+  font-size: 0.7rem;
+  
+}
+.app-theme{
+  background-color: hsl(207, 58%, 77%);
+  color: hsl(25, 60%, 4%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/*addtional info*/
+.info-text{
+display: flex;
+justify-content: center;  
+align-items: center;
+font-size: 1.5rem;
+background-color: hsl(190, 33%, 69%);
+}
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.info-text {
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  animation: marquee 10s linear infinite;
+}
+
+
+/*footer*/
+footer {
+  background-color: #ffcc80;
+  padding: 1rem;
+  height: 5px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+ 
+}
+.hero-page-text{
+  height: 900px;
+}
+.shopnow-button{
+display: flex;
+align-self:flex-end;
+justify-content: end;
+align-items: end;
+}
+#image1{
+
+  width: 100%  ;
+  height: 350px;
+  padding: 0px 10px 10px 10px;
+}
