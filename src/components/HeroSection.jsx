@@ -9,7 +9,7 @@ export default function HeroSection() {
     Handmade pickles and sweets crafted with love and tradition. Fresh, authentic, and straight from grandma’s kitchen!
   </p>
 </div>
-      <img id="image1"src="/public/images.png" alt="error image" />
+      <image id="image1"src="/images/images.png" alt="error image" />
       
     </section>
   );

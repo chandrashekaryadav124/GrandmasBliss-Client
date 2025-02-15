@@ -1,6 +1,7 @@
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import HeroSection from "./components/HeroSection";
+import Register from "./pages/Register";
 
 
 
@@ -10,6 +11,7 @@ export default function App() {
       <Header />
       <HeroSection />
       <Footer />
+      <Register/>
         
       
     </div>
