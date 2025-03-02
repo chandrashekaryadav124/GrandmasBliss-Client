@@ -1,13 +1,14 @@
 .auth-container {
+  margin-top: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f3f4f6;
+  background: linear-gradient(to right, #f6f5f5, #b9f6f8);
 }
 
 .auth-form {
-  background-color: #c1e5ef;
+  background: linear-gradient(to right , #f9fdfd, #efd7d7);
   padding: 2rem;
   border-radius: 0.7rem;
   box-shadow: 0 14px 10px rgba(0, 0, 0, 0.1);

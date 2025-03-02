@@ -9,7 +9,8 @@ body {
 
 /* Header Styling */
 header {
-  background-color: #ffcc80; /* Warm yellow-orange */
+  background: linear-gradient(to right, #ffcc66, #ff6666);
+  /*background-color: #ffcc80; /* Warm yellow-orange */
   padding: 1rem;
   display: flex;
   justify-content: space-between;
@@ -53,4 +54,23 @@ nav ul li a:hover {
 
 .hero p {
   font-size: 1.2rem;
+}
+.home-container {
+  padding: 20px;
+  text-align: center;
+}
+
+.home-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.home-container p {
+  font-size: 1.2rem;
+  color: #4a5568;
+}
+.logo-title{
+  color: black;
+  font-weight: bolder;
+  font-size: 2rem;
 }

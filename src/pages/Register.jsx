@@ -17,7 +17,7 @@ export default function Register() {
   return (
     <div className="auth-container">
       <form onSubmit={handleSubmit} className="auth-form">
-        <h2>Register</h2>
+        <h2 >Register</h2>
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input

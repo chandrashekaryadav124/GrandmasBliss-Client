@@ -74,19 +74,29 @@ body {
   color: #4a4a4a;
   margin: 0;
   padding: 0;
+  
 }
 
 /* Header Styling */
 header {
-  color: rgb(102, 102, 95);
-  background-color: #e7ddb0; /* Warm yellow-orange */
+  color: rgb(10, 10, 8);
+  /*background-color: #e7ddb0; /* Warm yellow-orange */
+  background: linear-gradient(to right, #fdfbf9, #f35d5d);
   padding: 1rem;
-  position: relative;
+  position:relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-shadow: 10px 4px 20px rgba(34, 151, 32, 0.1);
   height: 40px;
+  
+}
+.nav-header .logo-title{
+  color:rgb(59, 57, 57);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  
+ 
+  
 }
 
 nav ul {
@@ -104,12 +114,35 @@ nav ul li a {
   color: #4a4a4a;
   font-weight: bold;
   transition: color 0.3s ease-in-out;
+  font-size: 1.2rem;
 }
 
 nav ul li a:hover {
   color: #d35400; /* Deep orange */
 }
+.register-element{
+  color: #f3f3f3;
+  font-size: 1.4rem;
+  font-weight: 900;
+  padding-left: 250px;
+  font-family: 'Times New Roman', Times, serif;
 
+}
+.register-element:hover{
+  color: #ffaaaa;
+}
+.login-element{
+  color: #f3f3f3;
+  font-size: 1.4rem;
+  font-weight: 900;
+  font-family: 'Times New Roman', Times, serif;
+}
+.login-element:hover{
+  color: #ffaaaa;
+}
+.shopnow-button{
+  size: 2rem;
+}
 /* Hero Section */
 .hero {
   text-align: center;
