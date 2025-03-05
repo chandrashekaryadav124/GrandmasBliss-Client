@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 import "./Auth.css";
 
 export default function Register() {
@@ -18,6 +21,7 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   const validateStep = () => {
     let newErrors = {};
@@ -25,10 +29,8 @@ export default function Register() {
       if (!email) newErrors.email = "Email Address is required";
       if (!phone) newErrors.phone = "Phone Number is required";
     } else if (step === 2) {
-      
       if (!state) newErrors.state = "State is required";
       if (!country) newErrors.country = "Country is required";
-      
     } else if (step === 3) {
       if (!username) newErrors.username = "Username is required";
       if (!password) newErrors.password = "Password is required";
@@ -49,23 +51,42 @@ export default function Register() {
     setStep(step - 1);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateStep()) {
-      // Handle register logic here
-      console.log("First Name:", firstName);
-      console.log("Last Name:", lastName);
-      console.log("Email:", email);
-      console.log("Phone:", phone);
-      console.log("Date of Birth:", dob);
-      console.log("Street:", street);
-      console.log("City:", city);
-      console.log("State:", state);
-      console.log("Country:", country);
-      console.log("ZIP Code:", zip);
-      console.log("Username:", username);
-      console.log("Password:", password);
-      console.log("Confirm Password:", confirmPassword);
+      try {
+        const response = await fetch("http://localhost:5000/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            firstName,
+            lastName,
+            email,
+            phone,
+            dob,
+            street,
+            city,
+            state,
+            country,
+            zip,
+            username,
+            password,
+          }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          toast.success("Registration successful!");
+          console.log(data);
+          navigate("/login"); // Redirect to login page after successful registration
+        } else {
+          toast.error("Registration failed!");
+        }
+      } catch (error) {
+        toast.error("Registration failed!");
+        console.error(error);
+      }
     }
   };
 
@@ -84,7 +105,6 @@ export default function Register() {
                 onChange={(e) => setFirstName(e.target.value)}
                 required
               />
-              
             </div>
             <div className="form-group">
               <label htmlFor="lastName">Last Name</label>
@@ -95,8 +115,7 @@ export default function Register() {
                 onChange={(e) => setLastName(e.target.value)}
                 required
               />
-              
-              
+            </div>
             <div className="form-group">
               <label htmlFor="email">Email Address</label>
               <input
@@ -130,7 +149,6 @@ export default function Register() {
               />
             </div>
           </div>
-        </div>
         )}
         {step === 2 && (
           <div>
@@ -143,7 +161,6 @@ export default function Register() {
                 onChange={(e) => setStreet(e.target.value)}
                 required
               />
-              
             </div>
             <div className="form-group">
               <label htmlFor="city">City</label>
@@ -187,7 +204,6 @@ export default function Register() {
                 onChange={(e) => setZip(e.target.value)}
                 required
               />
-              
             </div>
           </div>
         )}

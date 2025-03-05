@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-//import HeroSection from "./components/HeroSection";
 import Register from "./pages/Register";
 import About from "./pages/About";
 import Products from "./pages/Products";
@@ -18,16 +17,14 @@ export default function App() {
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          
           <Route path="/home" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/products" element={<Products />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/gallery" element={<Gallery />} />
-          
         </Routes>
         <Footer />
       </div>
     </Router>
   );
-} 
+}

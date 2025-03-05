@@ -1,15 +1,31 @@
 import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 import "./Auth.css";
 
-export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+
+export default function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Email:", email);
-    console.log("Password:", password);
+    try {
+      const response = await axios.get(`http://localhost:5000/users?username=${username}&password=${password}`);
+      if (response.data.length > 0) {
+        toast.success("Login successful!");
+        navigate("/home");
+      } else {
+        toast.error("Invalid credentials!");
+      }
+    } catch (error) {
+      toast.error("Login failed!");
+      console.error(error);
+    }
   };
 
   return (
@@ -17,12 +33,12 @@ export default function Login() {
       <form onSubmit={handleSubmit} className="auth-form">
         <h2>Login</h2>
         <div className="form-group">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="username">Username</label>
           <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>
@@ -40,4 +56,4 @@ export default function Login() {
       </form>
     </div>
   );
-} 
+}
