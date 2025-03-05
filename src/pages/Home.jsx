@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./Home.css";
 
+
 const Home = () => {
   const [products] = useState([
     { id: 1, name: "Grandma's Special Mango Pickle", price: "$12", image: "https://www.ticklingpalates.com/wp-content/uploads/2022/05/mango-pickle-recipe.jpg" },
@@ -9,10 +10,11 @@ const Home = () => {
 
   return (
     <div className="home-container">
+      
       {/* Hero Section */}
       <header className="hero">
         <h1>Welcome to Grandma’s Bliss</h1>
-        <p>Homemade sweets & pickles made with love and tradition.</p>
+        <p>🏠Homemade sweets & pickles made with love and tradition.</p>
         <button className="shop-btn">Shop Now</button>
       </header>
 
