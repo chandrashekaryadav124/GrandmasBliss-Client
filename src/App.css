@@ -1,102 +1,124 @@
 /* ====== Header Styles ====== */
 .header {
-  background-color: #eddac2;
-  padding: 15px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 3px solid #FFB703;
-  font-family: 'Arial', sans-serif;
+  padding: 10px 20px;
+  height: 50px;
+  background-color: #d27c4b;
+  border-bottom: 1px solid #ccc;
+  flex-wrap: wrap; /* Ensures proper layout on smaller screens */
+  transition: background-color 0.4s; /* Smooth transition for background color */
 }
+
+
 
 /* ====== Logo Section ====== */
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
 }
 
 .logo-icon {
-  font-size: 30px;
+  font-size: 26px;
+  margin-right: 10px;
+  transition: transform 0.3s; /* Smooth transition for transform */
+}
+
+.logo-icon:hover {
+  transform: rotate(20deg); /* Rotate icon on hover */
 }
 
 .logo-text {
-  font-size: 26px;
-  font-weight:800;
-  color: #c56901;
-  font-family: 'Times New Roman', Times, serif;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333; /* Better contrast */
+  transition: color 0.3s; /* Smooth transition for color */
+}
+
+.logo-text:hover {
+  color: #000; /* Darker color on hover */
 }
 
 /* ====== Navigation Section ====== */
 .nav-links {
   display: flex;
-  gap: 20px;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.nav-link {
-  text-decoration: none;
-  color: #4B5563;
-  font-weight: 500;
-  transition: color 0.3s, transform 0.3s;
+.nav-item {
+  margin: 0 10px;
 }
 
-.nav-link:hover {
-  color: #B45309;
-  transform: translateY(-3px);
+.nav-link {
+  text-decoration: none;
+  color: #282828;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 1.2rem;
+  padding: 8px 12px;
+  border-radius: 5px;
+  position: relative;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background-color: #000;
+  transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
+}
+.nav-link:hover::after {
+  width: 100%;
+  left: 0;
 }
 
 .nav-link.active {
-  color: #B45309;
-  border-bottom: 2px solid #B45309;
-}
-
-/* ====== Auth Buttons ====== */
-.auth-buttons {
-  display: flex;
-  gap: 15px;
-}
-
-.btn {
-  text-decoration: none;
-  padding: 8px 20px;
-  border-radius: 20px;
+  color: #000;
   font-weight: bold;
-  transition: background-color 0.3s, transform 0.3s;
 }
 
-.btn-register {
-  background-color: #F59E0B;
-  color: white;
+.nav-link.active::after {
+  width: 100%;
+  left: 0;
 }
 
-.btn-register:hover {
-  background-color: #D97706;
-  transform: scale(1.05);
+
+
+/*authlinks*/
+.auth-link {
+  color: #000; /* Black text color */
+  font-weight: bold; /* Bold text */
+  text-decoration: none; /* Removes underline */
+  display: inline-flex; /* Makes gap work */
+  align-items: center; /* Centers content vertically */
+  gap: 6px; /* Spacing between elements inside the link */
+  padding: 6px 12px; /* Adds some spacing around the text */
+  border-radius: 6px; /* Rounded corners for a softer look */
+  transition: all 0.3s ease-in-out; /* Smooth hover effect */
 }
 
-.btn-login {
-  background-color: #DC2626;
-  color: white;
+.auth-link:hover {
+  color: #fff; /* White text on hover */
+  background-color: #000; /* Black background on hover */
+  text-decoration: none; /* Ensures no underline appears */
 }
 
-.btn-login:hover {
-  background-color: #B91C1C;
-  transform: scale(1.05);
-}
+/* ====== Profile Dropdown ====== */
 
 /* ====== Footer Styles ====== */
 footer {
   background-color: #ffcc80;
   padding: 1rem;
-  height: 5px;
   text-align: center;
   display: flex;
   justify-content: center;
   align-items: center;
- 
 }
 
 .footer p {
@@ -107,3 +129,76 @@ footer {
 .footer-subtext {
   color: #6B7280;
 }
+
+/* ====== Responsive Design ====== */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none; /* Hide nav links by default */
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    right: 10px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-links.show {
+    display: flex;
+  }
+
+  .nav-item {
+    margin: 10px 0;
+    text-align: center;
+  }
+
+  .profile-dropdown {
+    order: -1;
+  }
+}
+
+/*.dropdown-item-edit,.dropdown-item-logout{
+  display: inline-flex;
+  margin-left: 15px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  align-items: center;
+
+  align-items: center;
+  color: #fbfdfd;
+  background-color: #000;
+}
+.dropdown-item-logout{
+  background-color: #f44336;
+}*/
+.dropdown-item-edit, .dropdown-item-logout {
+  display: inline-flex;
+  margin-left: 15px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  align-items: center;
+  color: #fbfdfd;
+  background-color: #000;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.dropdown-item-edit:hover {
+  background-color: #333;
+  transform: scale(1.05);
+}
+
+.dropdown-item-logout {
+  background-color: #f44336;
+}
+
+.dropdown-item-logout:hover {
+  background-color: #d32f2f;
+  transform: scale(1.05);
+}
+
+
+  

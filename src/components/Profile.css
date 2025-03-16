@@ -1,0 +1,149 @@
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.profile-title {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+.profile-field {
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.profile-field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.profile-field input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.profile-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-save, .btn-cancel, .btn-edit, .btn-logout {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-save {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.btn-cancel {
+  background-color: #f44336;
+  color: white;
+}
+
+.btn-edit {
+  background-color: #008CBA;
+  color: white;
+  margin-top: 20px;
+}
+
+.btn-logout {
+  background-color: #f44336;
+  color: white;
+  margin-top: 20px;
+}
+
+footer{
+  position:relative;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 10px;
+}
+.profile-dropdown {
+  position: relative;
+}
+
+.profile-image {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  transition: transform 0.3s, border-color 0.3s; /* Smooth transition for transform and border color */
+}
+
+.profile-image:hover {
+  transform: scale(1.1);
+  border-color: #000; /* Darker border on hover */
+}
+
+/* Improved dropdown visibility */
+.dropdown-menu {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: rgb(255, 205, 205);
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transform: translateY(-10px);
+  transition: visibility 0.2s, opacity 0.3s, transform 0.3s;
+}
+
+.profile-dropdown:hover .dropdown-menu {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  padding: 10px;
+  margin-left: 10px;
+ 
+  width: 200px;
+  display: block;
+  color: black;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+
+
+/* ====== Profile Dropdown ====== */
+/* ====== Buttons ====== */
+button {
+  background-color: #ef9f9f; 
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  
+  
+}
+
+
+

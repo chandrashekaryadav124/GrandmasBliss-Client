@@ -51,11 +51,32 @@ export default function Register() {
     setStep(step - 1);
   };
 
+  const authenticateUser = async (username, password) => {
+    try {
+      const response = await fetch("https://grandmasbliss-server.onrender.com/authenticate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data.token;
+      } else {
+        throw new Error("Authentication failed");
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateStep()) {
       try {
-        const response = await fetch("http://localhost:5000/users", {
+        const response = await fetch("https://grandmasbliss-server.onrender.com/users", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -77,9 +98,14 @@ export default function Register() {
         });
         if (response.ok) {
           const data = await response.json();
-          toast.success("Registration successful!");
-          console.log(data);
-          navigate("/login"); // Redirect to login page after successful registration
+          const token = await authenticateUser(username, password);
+          if (token) {
+            toast.success("Registration and authentication successful!");
+            console.log(data);
+            navigate("/login"); // Redirect to login page after successful registration
+          } else {
+            toast.error("Authentication failed!");
+          }
         } else {
           toast.error("Registration failed!");
         }

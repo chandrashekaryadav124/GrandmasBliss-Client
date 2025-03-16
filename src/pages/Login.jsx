@@ -1,23 +1,26 @@
-import { useState } from "react";
+import  { useState } from 'react';
+import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
 import "./Auth.css";
 
-
-
-export default function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+const Login = ({ setIsAuthenticated, setUsername }) => {
+  const [username, setUsernameInput] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get(`http://localhost:5000/users?username=${username}&password=${password}`);
+      const response = await axios.get(`https://grandmasbliss-server.onrender.com/users?username=${username}&password=${password}`);
       if (response.data.length > 0) {
         toast.success("Login successful!");
+        localStorage.setItem('authToken', 'your-auth-token');
+        localStorage.setItem('username', username);
+        setIsAuthenticated(true);
+        setUsername(username);
         navigate("/home");
       } else {
         toast.error("Invalid credentials!");
@@ -30,7 +33,7 @@ export default function Login() {
 
   return (
     <div className="auth-container">
-      <form onSubmit={handleSubmit} className="auth-form">
+      <form onSubmit={handleLogin} className="auth-form">
         <h2>Login</h2>
         <div className="form-group">
           <label htmlFor="username">Username</label>
@@ -38,7 +41,7 @@ export default function Login() {
             type="text"
             id="username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUsernameInput(e.target.value)}
             required
           />
         </div>
@@ -56,4 +59,11 @@ export default function Login() {
       </form>
     </div>
   );
-}
+};
+
+Login.propTypes = {
+  setIsAuthenticated: PropTypes.func.isRequired,
+  setUsername: PropTypes.func.isRequired,
+};
+
+export default Login;
