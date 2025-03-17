@@ -53,7 +53,7 @@ export default function Register() {
 
   const authenticateUser = async (username, password) => {
     try {
-      const response = await fetch("https://grandmasbliss-server.onrender.com/authenticate", {
+      const response = await fetch("https://grandmasbliss-server.onrender.com/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -96,6 +96,8 @@ export default function Register() {
             password,
           }),
         });
+        alert("Registration successful! Please login to continue.");
+        navigate("/login");
         if (response.ok) {
           const data = await response.json();
           const token = await authenticateUser(username, password);

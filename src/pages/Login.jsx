@@ -15,6 +15,7 @@ const Login = ({ setIsAuthenticated, setUsername }) => {
     e.preventDefault();
     try {
       const response = await axios.get(`https://grandmasbliss-server.onrender.com/users?username=${username}&password=${password}`);
+      alert("login successful");
       if (response.data.length > 0) {
         toast.success("Login successful!");
         localStorage.setItem('authToken', 'your-auth-token');
