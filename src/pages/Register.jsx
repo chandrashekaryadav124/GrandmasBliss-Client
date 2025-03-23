@@ -19,6 +19,7 @@ export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
@@ -76,7 +77,8 @@ export default function Register() {
     e.preventDefault();
     if (validateStep()) {
       try {
-        const response = await fetch("https://grandmasbliss-server.onrender.com/users", {
+        const endpoint = isAdmin ? "https://grandmasbliss-server.onrender.com/admins" : "https://grandmasbliss-server.onrender.com/users";
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -96,8 +98,6 @@ export default function Register() {
             password,
           }),
         });
-        alert("Registration successful! Please login to continue.");
-        navigate("/login");
         if (response.ok) {
           const data = await response.json();
           const token = await authenticateUser(username, password);
@@ -269,6 +269,17 @@ export default function Register() {
                 required
               />
               {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
+            </div>
+            <div className="form-group">
+              <label htmlFor="isAdmin">
+                <input
+                  type="checkbox"
+                  id="isAdmin"
+                  checked={isAdmin}
+                  onChange={(e) => setIsAdmin(e.target.checked)}
+                />
+                Register as Admin
+              </label>
             </div>
           </div>
         )}
