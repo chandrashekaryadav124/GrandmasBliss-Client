@@ -13,6 +13,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 import Profile from './components/Profile';
 import './App.css';
+import { ToastContainer } from "react-toastify";
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -58,13 +59,14 @@ export default function App() {
           <Route path="/register" element={<PublicRoute element={<Register />} isAuthenticated={isAuthenticated} />} />
           <Route path="/login" element={<PublicRoute element={<Login setIsAuthenticated={setIsAuthenticated} setUsername={setUsername} />} isAuthenticated={isAuthenticated} />} />
           <Route path="/home" element={<PrivateRoute element={<Home />} isAuthenticated={isAuthenticated} />} />
-          <Route path="/about" element={<PrivateRoute element={<About />} isAuthenticated={isAuthenticated} />} />
+          <Route path="/about" element={<About/>} />
           <Route path="/products" element={<PrivateRoute element={<Products />} isAuthenticated={isAuthenticated} />} />
           <Route path="/contact" element={<PrivateRoute element={<Contact />} isAuthenticated={isAuthenticated} />} />
           <Route path="/gallery" element={<PrivateRoute element={<Gallery />} isAuthenticated={isAuthenticated} />} />
           <Route path="/profile" element={<PrivateRoute element={<Profile username={username} email={email} bio={bio} onLogout={handleLogout} />} isAuthenticated={isAuthenticated} />} />
         </Routes>
         <Footer />
+        <ToastContainer/>
       </div>
     </Router>
   );

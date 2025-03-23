@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
@@ -9,20 +9,25 @@ import "./Auth.css";
 const Login = ({ setIsAuthenticated, setUsername }) => {
   const [username, setUsernameInput] = useState('');
   const [password, setPassword] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get(`https://grandmasbliss-server.onrender.com/users?username=${username}&password=${password}`);
-      alert("login successful");
+      const endpoint = isAdmin ? `https://grandmasbliss-server.onrender.com/admins?username=${username}&password=${password}` : `https://grandmasbliss-server.onrender.com/users?username=${username}&password=${password}`;
+      const response = await axios.get(endpoint);
       if (response.data.length > 0) {
         toast.success("Login successful!");
         localStorage.setItem('authToken', 'your-auth-token');
         localStorage.setItem('username', username);
         setIsAuthenticated(true);
         setUsername(username);
-        navigate("/home");
+        if (isAdmin) {
+          navigate("/admin-dashboard");
+        } else {
+          navigate("/home");
+        }
       } else {
         toast.error("Invalid credentials!");
       }
@@ -55,6 +60,17 @@ const Login = ({ setIsAuthenticated, setUsername }) => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+        </div>
+        <div className="form-group">
+          <label htmlFor="isAdmin">
+            <input
+              type="checkbox"
+              id="isAdmin"
+              checked={isAdmin}
+              onChange={(e) => setIsAdmin(e.target.checked)}
+            />
+            Login as Admin
+          </label>
         </div>
         <button type="submit">Login</button>
       </form>

@@ -1,115 +1,100 @@
+/* Auth.css */
 .auth-container {
-  margin-top: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  max-width: 400px;
-  margin: 0 auto;
+  background: linear-gradient(135deg, #f8b500, #ff6f61);
   padding: 20px;
-  
-  
 }
 
 .auth-form {
-  background: #c8c7c7;
-  padding: 2.1rem;
-  border-radius: 1.3rem;
-  box-shadow: 0 14px 10px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 300px;
-  animation: fadeIn 1s ease-in-out;
-  display: flex;
-  flex-direction: column;
+  max-width: 450px;
+  text-align: center;
+  transition: transform 0.3s ease-in-out;
 }
 
 .auth-form h2 {
-  font-size: 1.5rem;
-  font-weight: bolder;
-  margin-bottom: 1.4rem;
-  color: hsl(0, 100%, 1%);
-  text-align: center;
-  margin-top: 2px;
-  text-align: center;
   margin-bottom: 20px;
+  color: #ff6f61;
+  font-size: 24px;
+  font-weight: bold;
 }
 
-.auth-form .form-group {
-  margin-bottom: 0.4rem;
+.form-group {
   margin-bottom: 15px;
+  text-align: left;
 }
 
-.auth-form .form-group label {
+.form-group label {
   display: block;
-  margin-bottom: 0.6rem;
-  color: #404651;
+  font-weight: 600;
+  color: #333;
   margin-bottom: 5px;
 }
 
-.auth-form .form-group input {
-  width: 95%;
-  padding: 0.5rem;
-  border: 1.2px solid #83878c;
-  border-radius: 0.30rem;
+.form-group input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease-in-out;
 }
 
-.auth-form .form-group input :hover {
-  border: 0.4em solid #111213;
+.form-group input:focus {
+  border-color: #ff6f61;
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(255, 111, 97, 0.5);
 }
 
-.auth-form button {
-  width: 100%;
-  padding: 0.75rem;
-  margin-top: 15px;
-  background-color: #1a6fdf;
-  color: #ffffff;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.auth-form button:hover {
-  background-color: #1a3e60;
-  background: 3s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.form-group input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
 }
 
 .error {
   color: red;
-  font-size: 0.9em;
+  font-size: 14px;
   margin-top: 5px;
 }
 
 .form-navigation {
   display: flex;
   justify-content: space-between;
+  margin-top: 20px;
 }
 
-.form-navigation button {
-  background-color: #4CAF50;
+button {
+  background: #ff6f61;
   color: white;
+  font-size: 16px;
+  font-weight: bold;
   padding: 10px 20px;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 1em;
-  border-radius: 5px;
+  transition: background 0.3s ease-in-out, transform 0.2s;
 }
 
-.form-navigation button:hover {
-  background-color: #45a049;
+button:hover {
+  background: #d95b50;
+  transform: scale(1.05);
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 500px) {
+  .auth-form {
+    width: 100%;
+    padding: 20px;
+  }
 }
