@@ -52,9 +52,10 @@ export default function Register() {
     setStep(step - 1);
   };
 
-  const authenticateUser = async (username, password) => {
+  const authenticateUser = async (username, password, isAdmin) => {
     try {
-      const response = await fetch("https://grandmasbliss-server.onrender.com/users", {
+      const endpoint = isAdmin ? "https://grandmasbliss-server.onrender.com/admins" : "https://grandmasbliss-server.onrender.com/users";
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,7 +66,8 @@ export default function Register() {
         const data = await response.json();
         return data.token;
       } else {
-        throw new Error("Authentication failed");
+        const errorData = await response.json();
+        throw new Error(`Authentication failed: ${errorData.message}`);
       }
     } catch (error) {
       console.error(error);
@@ -98,9 +100,12 @@ export default function Register() {
             password,
           }),
         });
+        toast.success("Registration and authentication successful!");
+            
+        navigate("/login");
         if (response.ok) {
           const data = await response.json();
-          const token = await authenticateUser(username, password);
+          const token = await authenticateUser(username, password, isAdmin);
           if (token) {
             toast.success("Registration and authentication successful!");
             console.log(data);
@@ -109,7 +114,8 @@ export default function Register() {
             toast.error("Authentication failed!");
           }
         } else {
-          toast.error("Registration failed!");
+          const errorData = await response.json();
+          toast.error(`Registration failed: ${errorData.message}`);
         }
       } catch (error) {
         toast.error("Registration failed!");

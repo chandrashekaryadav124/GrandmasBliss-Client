@@ -5,7 +5,7 @@
   align-items: center;
   padding: 10px 20px;
   height: 50px;
-  background-color: #d27c4b;
+  background-color: linear-gradient('toright', hsl(0, 0%, 100%), #f7e1e1);
   border-bottom: 1px solid #ccc;
   flex-wrap: wrap; /* Ensures proper layout on smaller screens */
   transition: background-color 0.4s; /* Smooth transition for background color */
@@ -32,8 +32,8 @@
 .logo-text {
   font-size: 24px;
   font-weight: bold;
-  color: #333; /* Better contrast */
-  transition: color 0.3s; /* Smooth transition for color */
+  color: #2a2929; /* Better contrast */
+  transition: color 0.2s; /* Smooth transition for color */
 }
 
 .logo-text:hover {
@@ -201,4 +201,56 @@ footer {
 }
 
 
+
   
+/* Cart container */
+.custom-cart-container {
+  display: flex;
+  align-items: center;
+  margin-left: auto; /* Pushes the cart to the right */
+}
+
+/* General navigation link styling */
+.custom-nav-link {
+  text-decoration: none;
+  color: #1e18ce;
+  font-size: 16px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: color 0.3s ease;
+}
+
+/* Active state for the cart link */
+.custom-nav-link.active {
+  background: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Cart-specific styles */
+.custom-cart-link {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  gap: 6px; /* Adds spacing between icon and text */
+}
+
+/* Hover effect */
+.custom-cart-link:hover {
+  color: #007bff;
+}
+
+/* Cart count badge */
+.custom-cart-count {
+  background: #ff4d4f;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 2px 6px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

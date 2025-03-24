@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../App.css";
+import CartLink from './CartLink';
 
 const Header = ({ isAuthenticated, username, email, bio, onLogout, profileImage }) => {
   const location = useLocation();
@@ -42,10 +43,11 @@ const Header = ({ isAuthenticated, username, email, bio, onLogout, profileImage 
           ))}
         </ul>
       </nav>
+      <CartLink isAuthenticated={isAuthenticated} />
       {isAuthenticated ? (
         <div className="profile-dropdown">
           <img
-            src={profileImage}
+            src={profileImage || "/default-profile.png"} // Default profile image
             alt="Profile"
             className="profile-image"
           />
@@ -53,7 +55,7 @@ const Header = ({ isAuthenticated, username, email, bio, onLogout, profileImage 
             <div className="dropdown-item">
               <p><strong>Username:</strong> {username}</p>
               <p><strong>Email:</strong> {email}</p>
-              <p><strong>Bio:</strong> {bio}</p>
+              {bio && <p><strong>Bio:</strong> {bio}</p>}
             </div>
             <button onClick={handleEditProfile} className="dropdown-item-edit">Edit Profile</button>
             <button onClick={handleLogout} className="dropdown-item-logout">Logout</button>
@@ -75,9 +77,7 @@ Header.propTypes = {
   email: PropTypes.string.isRequired,
   bio: PropTypes.string,
   onLogout: PropTypes.func.isRequired,
-  profileImage: PropTypes.string.isRequired,
+  profileImage: PropTypes.string,
 };
 
 export default Header;
-
-

@@ -1,38 +1,54 @@
 .gallery-container {
-    text-align: center;
-    padding: 50px 20px;
-    background-color: #fff7e6;
-    height:100vh;
+  text-align: center;
+  padding: 20px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+.gallery-item{
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f8f9fa;
+}
+footer{
+  background-color: #f8f9fa;
+  padding: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #6c757d;
+  height: max-content;
+  margin-top: 30px;
+}
+
+.slick-slide img {
+  width: 100%;
+  height: 300px;
+  object-fit:fill;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  gap: 10px;
+}
+
+/*.slick-prev, .slick-next {
+  color: #1b1a18; 
+  font-size: 40px;
+  z-index: 1;
+}*/
+
+.slick-dots li button:before {
+  color: #d97706; /* Dots color */
+  font-size: 1rem;
+  margin-top: 20px;
+}
+
+@media (max-width: 900px) {
+  .slick-slide img {
+    height: 150px;
   }
-  
-  .gallery-container h2 {
-    font-size: 28px;
-    margin-bottom: 20px;
-  }
-  
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    justify-content: center;
-    padding: 20px;
-  }
-  
-  .gallery-item {
-    overflow: hidden;
-    border-radius: 10px;
-    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .gallery-item img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
-    transition: transform 0.3s ease-in-out;
-  }
-  
-  .gallery-item img:hover {
-    transform: scale(1.05);
-  }
-  
+}

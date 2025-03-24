@@ -12,6 +12,7 @@ import Home from "./pages/Home";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 import Profile from './components/Profile';
+import Cart from './pages/Cart';
 import './App.css';
 import { ToastContainer } from "react-toastify";
 
@@ -64,6 +65,7 @@ export default function App() {
           <Route path="/contact" element={<PrivateRoute element={<Contact />} isAuthenticated={isAuthenticated} />} />
           <Route path="/gallery" element={<PrivateRoute element={<Gallery />} isAuthenticated={isAuthenticated} />} />
           <Route path="/profile" element={<PrivateRoute element={<Profile username={username} email={email} bio={bio} onLogout={handleLogout} />} isAuthenticated={isAuthenticated} />} />
+          <Route path="/cart" element={<PrivateRoute element={<Cart />} isAuthenticated={isAuthenticated} />} />
         </Routes>
         <Footer />
         <ToastContainer/>
