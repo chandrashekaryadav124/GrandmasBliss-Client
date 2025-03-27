@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../App.css";
 import CartLink from './CartLink';
 
-const Header = ({ isAuthenticated, username, email, bio, onLogout, profileImage }) => {
+const Header = ({ isAuthenticated, isAdmin, username, email, bio, onLogout, profileImage }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -25,25 +25,46 @@ const Header = ({ isAuthenticated, username, email, bio, onLogout, profileImage 
       </div>
       <nav>
         <ul className="nav-links">
-          {[
-            { name: "Home", path: "/home" },
-            { name: "About", path: "/about" },
-            { name: "Products", path: "/products" },
-            { name: "Contact", path: "/contact" },
-            { name: "Gallery", path: "/gallery" }
-          ].map((item) => (
-            <li key={item.path} className="nav-item">
-              <Link
-                to={item.path}
-                className={isActive(item.path) ? "nav-link active" : "nav-link"}
-              >
-                {item.name}
-              </Link>
-            </li>
-          ))}
+          {isAuthenticated && isAdmin ? (
+            // Admin-specific navigation
+            [
+              { name: "Home", path: "/home" },
+              { name: "About Us", path: "/about" },
+              { name: "Admin Dashboard", path: "/admin-dashboard" },
+              { name: "Products", path: "/products" },
+            ].map((item) => (
+              <li key={item.path} className="nav-item">
+                <Link
+                  to={item.path}
+                  className={isActive(item.path) ? "nav-link active" : "nav-link"}
+                >
+                  {item.name}
+                </Link>
+              </li>
+            ))
+          ) : (
+            // Regular navigation
+            [
+              { name: "Home", path: "/home" },
+              { name: "About", path: "/about" },
+              { name: "Products", path: "/products" },
+              { name: "Contact", path: "/contact" },
+              { name: "Gallery", path: "/gallery" }
+            ].map((item) => (
+              <li key={item.path} className="nav-item">
+                <Link
+                  to={item.path}
+                  className={isActive(item.path) ? "nav-link active" : "nav-link"}
+                >
+                  {item.name}
+                </Link>
+              </li>
+            ))
+          )}
         </ul>
       </nav>
-      <CartLink isAuthenticated={isAuthenticated} />
+      {/* CartLink is only visible for non-admin users */}
+      {!isAdmin && <CartLink isAuthenticated={isAuthenticated} />}
       {isAuthenticated ? (
         <div className="profile-dropdown">
           <img
@@ -73,6 +94,7 @@ const Header = ({ isAuthenticated, username, email, bio, onLogout, profileImage 
 
 Header.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool, // New prop for admin status
   username: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired,
   bio: PropTypes.string,

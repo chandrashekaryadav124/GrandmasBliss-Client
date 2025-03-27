@@ -6,23 +6,29 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Auth.css";
 
-const Login = ({ setIsAuthenticated, setUsername }) => {
+const Login = ({ setIsAuthenticated, setUsername, setIsAdmin }) => {
   const [username, setUsernameInput] = useState('');
   const [password, setPassword] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdminCheckbox] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = isAdmin ? `https://grandmasbliss-server.onrender.com/admins?username=${username}&password=${password}` : `https://grandmasbliss-server.onrender.com/users?username=${username}&password=${password}`;
+      const endpoint = isAdmin
+        ? `https://grandmasbliss-server.onrender.com/admins?username=${username}&password=${password}`
+        : `https://grandmasbliss-server.onrender.com/users?username=${username}&password=${password}`;
       const response = await axios.get(endpoint);
+
       if (response.data.length > 0) {
         toast.success("Login successful!");
         localStorage.setItem('authToken', 'your-auth-token');
         localStorage.setItem('username', username);
+        localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false'); // Store isAdmin as a string
         setIsAuthenticated(true);
         setUsername(username);
+        setIsAdmin(isAdmin); // Update isAdmin state in App.jsx
+
         if (isAdmin) {
           navigate("/admin-dashboard");
         } else {
@@ -67,7 +73,7 @@ const Login = ({ setIsAuthenticated, setUsername }) => {
               type="checkbox"
               id="isAdmin"
               checked={isAdmin}
-              onChange={(e) => setIsAdmin(e.target.checked)}
+              onChange={(e) => setIsAdminCheckbox(e.target.checked)}
             />
             Login as Admin
           </label>
@@ -81,6 +87,7 @@ const Login = ({ setIsAuthenticated, setUsername }) => {
 Login.propTypes = {
   setIsAuthenticated: PropTypes.func.isRequired,
   setUsername: PropTypes.func.isRequired,
+  setIsAdmin: PropTypes.func.isRequired, // New prop for updating isAdmin
 };
 
 export default Login;
