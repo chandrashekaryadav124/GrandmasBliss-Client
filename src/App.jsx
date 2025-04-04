@@ -16,6 +16,7 @@ import Cart from './pages/Cart';
 import './App.css';
 import { ToastContainer } from "react-toastify";
 import AdminDashboard from "./pages/AdminDashboard";
+import OrderConfirmation from "./pages/OrderConfirmation";
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -82,6 +83,8 @@ export default function App() {
           <Route path="/profile" element={<PrivateRoute element={<Profile username={username} email={email} bio={bio} onLogout={handleLogout} />} isAuthenticated={isAuthenticated} />} />
           <Route path="/cart" element={<PrivateRoute element={<Cart />} isAuthenticated={isAuthenticated} />} />
           <Route path="/admin-dashboard" element={<PrivateRoute element={<AdminDashboard />} isAuthenticated={isAuthenticated} adminOnly={true} />} />
+          <Route path="/order-confirmation" element={<OrderConfirmation />} />
+
         </Routes>
         <Footer />
         <ToastContainer />
