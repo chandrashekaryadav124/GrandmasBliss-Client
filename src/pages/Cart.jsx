@@ -8,12 +8,19 @@ const CartPage = () => {
   const [shipment, setShipment] = useState({ shippingCost: 9.99 });
   const navigate = useNavigate();
 
+  const quantityMultiplier = {
+    "500gm": 1,
+    "1kg": 2,
+    "2kg": 4,
+  };
+
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
     const parsedCart = storedCart
       ? JSON.parse(storedCart).map((item) => ({
           ...item,
-          quantity: item.quantity || 1,
+          unitCount: item.unitCount || 1,
+          quantity: item.quantity || "500gm",
         }))
       : [];
     setCart(parsedCart);
@@ -22,18 +29,34 @@ const CartPage = () => {
     if (storedShipment) setShipment(JSON.parse(storedShipment));
   }, []);
 
-  const subtotal = cart.reduce(
-    (total, item) => total + (item.price || 0) * (item.quantity || 1),
-    0
-  );
+  const calculateItemPrice = (item) => {
+    const multiplier = quantityMultiplier[item.quantity] || 1;
+    return (item.price || 0) * multiplier * item.unitCount;
+  };
+
+  const subtotal = cart.reduce((total, item) => {
+    return total + calculateItemPrice(item);
+  }, 0);
+
   const shipping = shipment?.shippingCost ?? 9.99;
   const tax = subtotal * 0.1;
   const total = subtotal + shipping + tax;
 
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return;
+  const updateUnitCount = (id, change) => {
+    const updatedCart = cart.map((item) => {
+      if (item.id === id) {
+        const newCount = item.unitCount + change;
+        return { ...item, unitCount: newCount > 0 ? newCount : 1 };
+      }
+      return item;
+    });
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
+  const updateWeight = (id, newWeight) => {
     const updatedCart = cart.map((item) =>
-      item.id === id ? { ...item, quantity: newQuantity } : item
+      item.id === id ? { ...item, quantity: newWeight } : item
     );
     setCart(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
@@ -76,28 +99,44 @@ const CartPage = () => {
       ) : (
         <>
           <div className="cart-grid">
-            {cart.map((item) => (
-              <div className="cart-item" key={item.id}>
-                <img src={item.imageUrl} alt={item.name} />
-                <div>
-                  <h3>{item.name}</h3>
-                  <p>{item.description}</p>
-                  <strong>₹{item.price.toFixed(2)}</strong>
-                  <div className="quantity-control">
-                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>
-                      <Minus size={16} />
-                    </button>
-                    <span>{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                      <Plus size={16} />
-                    </button>
+            {cart.map((item) => {
+              const itemTotalPrice = calculateItemPrice(item);
+              return (
+                <div className="cart-item" key={item.id}>
+                  <img src={item.imageUrl} alt={item.name} />
+                  <div>
+                    <h3>{item.name}</h3>
+                    <p>{item.description}</p>
+                    <strong>₹{itemTotalPrice.toFixed(2)}</strong>
+
+                    <div className="weight-select">
+                      <label>Weight: </label>
+                      <select
+                        value={item.quantity}
+                        onChange={(e) => updateWeight(item.id, e.target.value)}
+                      >
+                        <option value="500gm">500gm</option>
+                        <option value="1kg">1kg</option>
+                        <option value="2kg">2kg</option>
+                      </select>
+                    </div>
+
+                    <div className="quantity-control">
+                      <button onClick={() => updateUnitCount(item.id, -1)}>
+                        <Minus size={16} />
+                      </button>
+                      <span>{item.unitCount}</span>
+                      <button onClick={() => updateUnitCount(item.id, 1)}>
+                        <Plus size={16} />
+                      </button>
+                    </div>
                   </div>
+                  <button className="remove-btn" onClick={() => removeFromCart(item.id)}>
+                    <Trash2 size={20} />
+                  </button>
                 </div>
-                <button className="remove-btn" onClick={() => removeFromCart(item.id)}>
-                  <Trash2 size={20} />
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="total-section">

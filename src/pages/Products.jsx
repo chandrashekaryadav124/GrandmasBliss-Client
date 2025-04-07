@@ -6,39 +6,60 @@ const ProductsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [category, setCategory] = useState("");
+  const [quantities, setQuantities] = useState({});
 
   useEffect(() => {
-    // Fetch products from localStorage
     const savedProducts = localStorage.getItem("products");
     if (savedProducts) {
       setProducts(JSON.parse(savedProducts));
     }
   }, []);
 
-  const addToCart = (product) => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    cart.push(product);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert(`${product.name} added to cart!`);
+  const quantityMultiplier = {
+    "500gm": 1,
+    "1kg": 2,
+    "2kg": 4,
   };
 
-  // Filter products based on search, price, and category
+  const addToCart = (product) => {
+    const selectedQty = quantities[product.id] || "500gm";
+    const multiplier = quantityMultiplier[selectedQty];
+    const priceWithQty = product.price * multiplier;
+
+    const productWithQty = {
+      ...product,
+      quantity: selectedQty,
+      totalPrice: priceWithQty,
+    };
+
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    cart.push(productWithQty);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert(`${product.name} (${selectedQty}) added to cart!`);
+  };
+
+  const handleQuantityChange = (productId, value) => {
+    setQuantities((prev) => ({ ...prev, [productId]: value }));
+  };
+
   const filteredProducts = products.filter((product) => {
+    const selectedQty = quantities[product.id] || "500gm";
+    const multiplier = quantityMultiplier[selectedQty];
+    const totalPrice = product.price * multiplier;
+
     return (
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (maxPrice === "" || product.price <= parseFloat(maxPrice)) &&
+      (maxPrice === "" || totalPrice <= parseFloat(maxPrice)) &&
       (category === "" || product.category === category)
     );
   });
 
-  // Get unique categories from the products list
   const categories = [...new Set(products.map((product) => product.category))];
 
   return (
     <Container>
       <h1>Our Products</h1>
 
-      {/* Filters Section */}
       <Filters>
         <input
           type="text"
@@ -64,20 +85,38 @@ const ProductsPage = () => {
         </select>
       </Filters>
 
-      {/* Product Grid */}
       <ProductGrid>
         {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
-            <ProductCard key={product.id}>
-              <img src={product.imageUrl} alt={product.name} />
-              <h3>{product.name}</h3>
-              <p>{product.description}</p>
-              <strong>Rs{product.price.toFixed(2)}</strong>
-              <AddToCartButton onClick={() => addToCart(product)}>
-                Add to Cart
-              </AddToCartButton>
-            </ProductCard>
-          ))
+          filteredProducts.map((product) => {
+            const selectedQty = quantities[product.id] || "500gm";
+            const multiplier = quantityMultiplier[selectedQty];
+            const adjustedPrice = product.price * multiplier;
+
+            return (
+              <ProductCard key={product.id}>
+                <img src={product.imageUrl} alt={product.name} />
+                <h3>{product.name}</h3>
+                <p>{product.description}</p>
+
+                <strong>Rs {adjustedPrice.toFixed(2)}</strong>
+
+                <select
+                  value={selectedQty}
+                  onChange={(e) =>
+                    handleQuantityChange(product.id, e.target.value)
+                  }
+                >
+                  <option value="500gm">500gm</option>
+                  <option value="1kg">1kg</option>
+                  <option value="2kg">2kg</option>
+                </select>
+
+                <AddToCartButton onClick={() => addToCart(product)}>
+                  Add to Cart
+                </AddToCartButton>
+              </ProductCard>
+            );
+          })
         ) : (
           <NoResults>No products found.</NoResults>
         )}
@@ -117,8 +156,8 @@ const Filters = styled.div`
 
 const ProductGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.2rem;
 `;
 
 const ProductCard = styled.div`
@@ -149,6 +188,13 @@ const ProductCard = styled.div`
     margin-top: 0.5rem;
     color: #4f46e5;
   }
+
+  select {
+    margin-top: 0.5rem;
+    padding: 0.3rem;
+    border-radius: 0.375rem;
+    border: 1px solid #d1d5db;
+  }
 `;
 
 const AddToCartButton = styled.button`
@@ -171,4 +217,3 @@ const NoResults = styled.p`
   font-size: 1.2rem;
   color: #ef4444;
 `;
-

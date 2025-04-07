@@ -20,10 +20,13 @@ const AdminDashboard = () => {
     description: "",
     imageUrl: "",
     category: "Sweets",
+    quantity: "500gm", // Default quantity
   });
 
   const [editing, setEditing] = useState(false);
   const [newCategory, setNewCategory] = useState("");
+
+  const quantityOptions = ["250gm", "500gm", "1kg", "2kg", "5kg"];
 
   useEffect(() => {
     localStorage.setItem("products", JSON.stringify(products));
@@ -40,13 +43,22 @@ const AdminDashboard = () => {
       );
       setEditing(false);
     } else {
-      setProducts((prevProducts) => [
-        ...prevProducts,
-        { ...updatedProduct, id: Date.now().toString() },
-      ]);
+      const newProduct = {
+        ...updatedProduct,
+        id: Date.now().toString(),
+      };
+      setProducts((prevProducts) => [...prevProducts, newProduct]);
     }
 
-    setFormData({ id: "", name: "", price: "", description: "", imageUrl: "", category: "Sweets" });
+    setFormData({
+      id: "",
+      name: "",
+      price: "",
+      description: "",
+      imageUrl: "",
+      category: "Sweets",
+      quantity: "500gm",
+    });
   };
 
   const handleDelete = (id) => {
@@ -56,13 +68,17 @@ const AdminDashboard = () => {
   };
 
   const handleEdit = (product) => {
-    setFormData({ ...product, price: product.price.toString() });
+    setFormData({
+      ...product,
+      price: product.price.toString(),
+      id: product.id,
+    });
     setEditing(true);
   };
 
   const addCategory = () => {
-    if (newCategory && !categories.includes(newCategory)) {
-      setCategories([...categories, newCategory]);
+    if (newCategory.trim() && !categories.includes(newCategory)) {
+      setCategories([...categories, newCategory.trim()]);
       setNewCategory("");
     }
   };
@@ -78,21 +94,58 @@ const AdminDashboard = () => {
         <h2>{editing ? "Edit Product" : "Add New Product"}</h2>
         <form onSubmit={handleSubmit}>
           <label>Product Name</label>
-          <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+          <input
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            required
+          />
 
           <label>Price</label>
-          <input type="number" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} required step="0.01" />
+          <input
+            type="number"
+            value={formData.price}
+            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+            required
+            step="0.01"
+          />
+
+          <label>Quantity</label>
+          <select
+            value={formData.quantity}
+            onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+          >
+            {quantityOptions.map((q) => (
+              <option key={q} value={q}>
+                {q}
+              </option>
+            ))}
+          </select>
 
           <label>Description</label>
-          <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            required
+          />
 
           <label>Image URL</label>
-          <input type="url" value={formData.imageUrl} onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })} required />
+          <input
+            type="url"
+            value={formData.imageUrl}
+            onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+            required
+          />
 
           <label>Category</label>
-          <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
+          <select
+            value={formData.category}
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+          >
             {categories.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
             ))}
           </select>
 
@@ -101,7 +154,12 @@ const AdminDashboard = () => {
 
         <div className="category-section">
           <h3>Add New Category</h3>
-          <input type="text" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} placeholder="Enter category name" />
+          <input
+            type="text"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            placeholder="Enter category name"
+          />
           <button onClick={addCategory}>Add Category</button>
         </div>
       </div>
@@ -114,6 +172,7 @@ const AdminDashboard = () => {
               <th>Image</th>
               <th>Name</th>
               <th>Price</th>
+              <th>Quantity</th>
               <th>Category</th>
               <th>Actions</th>
             </tr>
@@ -121,13 +180,20 @@ const AdminDashboard = () => {
           <tbody>
             {products.map((product) => (
               <tr key={product.id}>
-                <td><img src={product.imageUrl} alt={product.name} /></td>
+                <td>
+                  <img src={product.imageUrl} alt={product.name} />
+                </td>
                 <td>{product.name}</td>
                 <td>Rs{product.price.toFixed(2)}</td>
+                <td>{product.quantity}</td>
                 <td>{product.category}</td>
                 <td className="action-buttons">
-                  <button className="edit-btn" onClick={() => handleEdit(product)}><PencilLine /></button>
-                  <button className="delete-btn" onClick={() => handleDelete(product.id)}><Trash2 /></button>
+                  <button className="edit-btn" onClick={() => handleEdit(product)}>
+                    <PencilLine />
+                  </button>
+                  <button className="delete-btn" onClick={() => handleDelete(product.id)}>
+                    <Trash2 />
+                  </button>
                 </td>
               </tr>
             ))}
