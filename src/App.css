@@ -4,8 +4,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  height: 50px;
-  background-color: linear-gradient('toright', hsl(0, 0%, 100%), #f7e1e1);
+  height: 40px;
+  background-color: linear-gradient('toright', hsl(0, 0%, 100%), #f3c1c1);
   border-bottom: 1px solid #ccc;
   flex-wrap: wrap; /* Ensures proper layout on smaller screens */
   transition: background-color 0.4s; /* Smooth transition for background color */

@@ -1,81 +1,89 @@
 import { useState, useEffect } from "react";
-import { ShoppingCart, Trash2, Plus, Minus, CreditCard } from "lucide-react";
+import { ShoppingCart, Trash2, Plus, Minus, Truck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import "./Cart.css"; // Import your CSS file for styling
+import "./Cart.css";
 
 const CartPage = () => {
   const [cart, setCart] = useState([]);
-  const [ setIsCartOpen] = useState(false);
-  const [ setOrderSummaryOpen] = useState(false);
-
+  const [shipment, setShipment] = useState({ shippingCost: 9.99 });
   const navigate = useNavigate();
 
-  // Load cart from localStorage on component mount
-  useEffect(() => {
-    try {
-      const storedCart = localStorage.getItem("cart");
-      if (storedCart) {
-        const parsedCart = JSON.parse(storedCart).map((item) => ({
-          ...item,
-          quantity: item.quantity || 1,
-        }));
-        setCart(parsedCart);
-      }
-    } catch (error) {
-      console.error("Error loading cart from localStorage:", error);
-      setCart([]);
-    }
-  }, []);
-
-  // Handle checkout process
-  const handleCheckout = () => {
-    if (window.confirm("Are you sure you want to proceed to checkout?")) {
-      setCart([]);
-      localStorage.removeItem("cart");
-      navigate("/order-confirmation");
-    }
+  const quantityMultiplier = {
+    "500gm": 1,
+    "1kg": 2,
+    "2kg": 4,
   };
 
-  // Remove an item from the cart
+  useEffect(() => {
+    const storedCart = localStorage.getItem("cart");
+    const parsedCart = storedCart
+      ? JSON.parse(storedCart).map((item) => ({
+          ...item,
+          unitCount: item.unitCount || 1,
+          quantity: item.quantity || "500gm",
+        }))
+      : [];
+    setCart(parsedCart);
+
+    const storedShipment = localStorage.getItem("shipmentDetails");
+    if (storedShipment) setShipment(JSON.parse(storedShipment));
+  }, []);
+
+  const calculateItemPrice = (item) => {
+    const multiplier = quantityMultiplier[item.quantity] || 1;
+    return (item.price || 0) * multiplier * item.unitCount;
+  };
+
+  const subtotal = cart.reduce((total, item) => {
+    return total + calculateItemPrice(item);
+  }, 0);
+
+  const shipping = shipment?.shippingCost ?? 9.99;
+  const tax = subtotal * 0.1;
+  const total = subtotal + shipping + tax;
+
+  const updateUnitCount = (id, change) => {
+    const updatedCart = cart.map((item) => {
+      if (item.id === id) {
+        const newCount = item.unitCount + change;
+        return { ...item, unitCount: newCount > 0 ? newCount : 1 };
+      }
+      return item;
+    });
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
+  const updateWeight = (id, newWeight) => {
+    const updatedCart = cart.map((item) =>
+      item.id === id ? { ...item, quantity: newWeight } : item
+    );
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
   const removeFromCart = (id) => {
     const updatedCart = cart.filter((item) => item.id !== id);
     setCart(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
-  // Update the quantity of an item in the cart
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return;
-    const updatedCart = cart.map((item) =>
-      item.id === id ? { ...item, quantity: newQuantity } : item
-    );
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-  };
-
-  // Clear the entire cart
   const clearCart = () => {
     if (window.confirm("Are you sure you want to clear the cart?")) {
       setCart([]);
       localStorage.removeItem("cart");
-      setOrderSummaryOpen(false);
     }
   };
 
-  // Calculate order totals
-  const subtotal = cart.reduce(
-    (total, item) => total + item.price * (item.quantity || 1),
-    0
-  );
-  const shipping = subtotal > 1000 ? 0 : 9.99; // Free shipping for orders over Rs 1000
-  const tax = subtotal * 0.1;
-  const total = subtotal + shipping + tax;
+  const handleGoToShipment = () => {
+    navigate("/shipment");
+  };
 
   return (
     <div className="container">
       <header className="header">
         <h1>Your Cart</h1>
-        <button onClick={() => setIsCartOpen(true)} className="cart-icon">
+        <button className="cart-icon">
           <ShoppingCart size={28} />
           {cart.length > 0 && <span className="cart-badge">{cart.length}</span>}
         </button>
@@ -91,51 +99,68 @@ const CartPage = () => {
       ) : (
         <>
           <div className="cart-grid">
-            {cart.map((item) => (
-              <div className="cart-item" key={item.id}>
-                <img src={item.imageUrl} alt={item.name} />
-                <div>
-                  <h3>{item.name}</h3>
-                  <p>{item.description}</p>
-                  <strong>Rs {item.price.toFixed(2)}</strong>
-                  <div className="quantity-control">
-                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>
-                      <Minus size={16} />
-                    </button>
-                    <span>{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                      <Plus size={16} />
-                    </button>
+            {cart.map((item) => {
+              const itemTotalPrice = calculateItemPrice(item);
+              return (
+                <div className="cart-item" key={item.id}>
+                  <img src={item.imageUrl} alt={item.name} />
+                  <div>
+                    <h3>{item.name}</h3>
+                    <p>{item.description}</p>
+                    <strong>₹{itemTotalPrice.toFixed(2)}</strong>
+
+                    <div className="weight-select">
+                      <label>Weight: </label>
+                      <select
+                        value={item.quantity}
+                        onChange={(e) => updateWeight(item.id, e.target.value)}
+                      >
+                        <option value="500gm">500gm</option>
+                        <option value="1kg">1kg</option>
+                        <option value="2kg">2kg</option>
+                      </select>
+                    </div>
+
+                    <div className="quantity-control">
+                      <button onClick={() => updateUnitCount(item.id, -1)}>
+                        <Minus size={16} />
+                      </button>
+                      <span>{item.unitCount}</span>
+                      <button onClick={() => updateUnitCount(item.id, 1)}>
+                        <Plus size={16} />
+                      </button>
+                    </div>
                   </div>
+                  <button className="remove-btn" onClick={() => removeFromCart(item.id)}>
+                    <Trash2 size={20} />
+                  </button>
                 </div>
-                <button className="remove-btn" onClick={() => removeFromCart(item.id)}>
-                  <Trash2 size={20} />
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="total-section">
             <h2>Order Summary</h2>
             <div className="summary-line">
               <span>Subtotal:</span>
-              <span>Rs {subtotal.toFixed(2)}</span>
+              <span>₹{subtotal.toFixed(2)}</span>
             </div>
             <div className="summary-line">
               <span>Shipping:</span>
-              <span>Rs {shipping.toFixed(2)}</span>
+              <span>₹{shipping.toFixed(2)}</span>
             </div>
             <div className="summary-line">
               <span>Tax (10%):</span>
-              <span>Rs {tax.toFixed(2)}</span>
+              <span>₹{tax.toFixed(2)}</span>
             </div>
             <div className="summary-line total">
               <span>Total:</span>
-              <span>Rs {total.toFixed(2)}</span>
+              <span>₹{total.toFixed(2)}</span>
             </div>
+
             <div className="button-group">
-              <button className="checkout-btn" onClick={handleCheckout}>
-                <CreditCard size={18} /> Proceed to Checkout
+              <button className="shipment-btn" onClick={handleGoToShipment}>
+                <Truck size={18} /> Go to Shipment
               </button>
               <button className="clear-btn" onClick={clearCart}>
                 <Trash2 size={18} /> Clear Cart
