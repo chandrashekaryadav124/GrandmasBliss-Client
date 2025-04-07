@@ -56,8 +56,8 @@ const ProductsPage = () => {
 
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="">All Categories</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
+          {categories.map((cat, index) => (
+            <option key={index} value={cat}>
               {cat}
             </option>
           ))}

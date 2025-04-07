@@ -5,7 +5,7 @@ import Header from "./components/Header";
 import Register from "./pages/Register";
 import About from "./pages/About";
 import Products from "./pages/Products";
-import Contact from "./pages/Contact";
+import Bulkorder from "./pages/Bulkorder";
 import Gallery from "./pages/Gallery";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
@@ -16,6 +16,8 @@ import Cart from './pages/Cart';
 import './App.css';
 import { ToastContainer } from "react-toastify";
 import AdminDashboard from "./pages/AdminDashboard";
+import Shipment from "./pages/Shipment";
+import PaymentPage from "./pages/PaymentPage";
 import OrderConfirmation from "./pages/OrderConfirmation";
 
 export default function App() {
@@ -73,16 +75,19 @@ export default function App() {
           profileImage={profileImage}
         />
         <Routes>
+          
           <Route path="/register" element={<PublicRoute element={<Register />} isAuthenticated={isAuthenticated} />} />
           <Route path="/login" element={<PublicRoute element={<Login setIsAuthenticated={setIsAuthenticated} setUsername={setUsername} setIsAdmin={setIsAdmin} />} isAuthenticated={isAuthenticated} />} />
           <Route path="/home" element={<PrivateRoute element={<Home />} isAuthenticated={isAuthenticated} />} />
           <Route path="/about" element={<About />} />
           <Route path="/products" element={<PrivateRoute element={<Products />} isAuthenticated={isAuthenticated} />} />
-          <Route path="/contact" element={<PrivateRoute element={<Contact />} isAuthenticated={isAuthenticated} />} />
+          <Route path="/bulkorder" element={<PrivateRoute element={<Bulkorder />} isAuthenticated={isAuthenticated} />} />
           <Route path="/gallery" element={<PrivateRoute element={<Gallery />} isAuthenticated={isAuthenticated} />} />
           <Route path="/profile" element={<PrivateRoute element={<Profile username={username} email={email} bio={bio} onLogout={handleLogout} />} isAuthenticated={isAuthenticated} />} />
           <Route path="/cart" element={<PrivateRoute element={<Cart />} isAuthenticated={isAuthenticated} />} />
           <Route path="/admin-dashboard" element={<PrivateRoute element={<AdminDashboard />} isAuthenticated={isAuthenticated} adminOnly={true} />} />
+          <Route path="/shipment" element={<Shipment/>} />
+          <Route path="/payment" element={<PaymentPage />} />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
 
         </Routes>

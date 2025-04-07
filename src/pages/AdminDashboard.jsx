@@ -71,7 +71,7 @@ const AdminDashboard = () => {
     <div className="container">
       <div className="admin-header">
         <Package className="icon" />
-        <h1>Admin Dashboard</h1>
+        <h1>Seller Dashboard</h1>
       </div>
 
       <div className="form-container">

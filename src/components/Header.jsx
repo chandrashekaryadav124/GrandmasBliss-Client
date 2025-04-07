@@ -30,7 +30,7 @@ const Header = ({ isAuthenticated, isAdmin, username, email, bio, onLogout, prof
             [
               { name: "Home", path: "/home" },
               { name: "About Us", path: "/about" },
-              { name: "Admin Dashboard", path: "/admin-dashboard" },
+              { name: "Dashboard", path: "/admin-dashboard" },
               { name: "Products", path: "/products" },
             ].map((item) => (
               <li key={item.path} className="nav-item">
@@ -48,7 +48,7 @@ const Header = ({ isAuthenticated, isAdmin, username, email, bio, onLogout, prof
               { name: "Home", path: "/home" },
               { name: "About", path: "/about" },
               { name: "Products", path: "/products" },
-              { name: "Contact", path: "/contact" },
+              { name: "BulkOrder", path: "/bulkorder" },
               { name: "Gallery", path: "/gallery" }
             ].map((item) => (
               <li key={item.path} className="nav-item">
