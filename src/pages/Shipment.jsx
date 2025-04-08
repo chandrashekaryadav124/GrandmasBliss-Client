@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import { CreditCard } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Truck } from "lucide-react";
+import PropTypes from 'prop-types';
 
 const statesOfIndia = [
   "Andhra Pradesh", "Telangana", "Karnataka", "Tamil Nadu", "Maharashtra", "Kerala",
@@ -19,14 +20,7 @@ const Shipment = ({ onSave }) => {
     deliveryOption: "standard",
   });
 
-  const [cart, setCart] = useState([]);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    const parsedCart = storedCart ? JSON.parse(storedCart) : [];
-    setCart(parsedCart);
-  }, []);
 
   const handleChange = (e) => {
     setDetails({ ...details, [e.target.name]: e.target.value });
@@ -43,180 +37,207 @@ const Shipment = ({ onSave }) => {
     };
 
     localStorage.setItem("shipmentDetails", JSON.stringify(shipmentDetails));
-    onSave && onSave(shipmentDetails);
+    if (onSave) onSave(shipmentDetails);
     alert("Shipping details saved!");
   };
 
-  const subtotal = cart.reduce(
-    (total, item) => total + (item.price || 0) * (item.quantity || 1),
-    0
-  );
-  const shipping = details.deliveryOption === "express" ? 49.99 :
-                   details.deliveryOption === "standard" ? 9.99 : 0;
-  const tax = subtotal * 0.1;
-  const total = subtotal + shipping + tax;
-
   const handleCheckout = () => {
-    handleSave(); // Save shipment details first
+    handleSave();
     if (window.confirm("Proceed to payment?")) {
       navigate("/payment");
     }
   };
+  Shipment.propTypes = {
+    onSave: PropTypes.func.isRequired,
+  };
 
   return (
-    <div style={styles.container}>
-      <h3>Shipping Details</h3>
+    <div style={styles.wrapper}>
+      <div style={styles.card}>
+        <h2 style={styles.title}>
+          <Truck size={24} style={{ marginRight: 8 }} />
+          Shipping Information
+        </h2>
 
-      <input
-        type="text"
-        name="fullName"
-        placeholder="Full Name"
-        value={details.fullName}
-        onChange={handleChange}
-        required
-        style={styles.input}
-      />
-      <input
-        type="tel"
-        name="phone"
-        placeholder="Phone Number"
-        value={details.phone}
-        onChange={handleChange}
-        required
-        style={styles.input}
-      />
-      <input
-        type="email"
-        name="email"
-        placeholder="Email Address"
-        value={details.email}
-        onChange={handleChange}
-        required
-        style={styles.input}
-      />
-      <textarea
-        name="address"
-        placeholder="Full Address"
-        value={details.address}
-        onChange={handleChange}
-        style={styles.textarea}
-        required
-      />
-      <label style={styles.label}>State:</label>
-      <select
-        name="state"
-        value={details.state}
-        onChange={handleChange}
-        style={styles.select}
-        required
-      >
-        <option value="">Select State</option>
-        {statesOfIndia.map((st) => (
-          <option key={st} value={st}>{st}</option>
-        ))}
-      </select>
+        <p style={styles.subtitle}>Please enter your delivery address and contact details.</p>
 
-      <label style={styles.label}>Delivery Option:</label>
-      <select
-        name="deliveryOption"
-        value={details.deliveryOption}
-        onChange={handleChange}
-        style={styles.select}
-      >
-        <option value="free">Free (5-7 days)</option>
-        <option value="standard">Standard - ₹9.99 (3-5 days)</option>
-        <option value="express">Express - ₹49.99 (1-2 days)</option>
-      </select>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Full Name</label>
+          <input
+            type="text"
+            name="fullName"
+            value={details.fullName}
+            onChange={handleChange}
+            style={styles.input}
+            placeholder="Enter your full name"
+            required
+          />
+        </div>
 
-      <button onClick={handleSave} style={styles.button}>
-        Save Shipment Info
-      </button>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Phone Number</label>
+          <input
+            type="tel"
+            name="phone"
+            value={details.phone}
+            onChange={handleChange}
+            style={styles.input}
+            placeholder="e.g. 9876543210"
+            required
+          />
+        </div>
 
-      {/* Order Summary Section */}
-      {cart.length > 0 && (
-        <div style={styles.summaryBox}>
-          <h3 style={{ marginBottom: "10px" }}>Order Summary</h3>
-          <p>Subtotal: ₹{subtotal.toFixed(2)}</p>
-          <p>Shipping: ₹{shipping.toFixed(2)}</p>
-          <p>Tax (10%): ₹{tax.toFixed(2)}</p>
-          <h4>Total: ₹{total.toFixed(2)}</h4>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Email Address</label>
+          <input
+            type="email"
+            name="email"
+            value={details.email}
+            onChange={handleChange}
+            style={styles.input}
+            placeholder="yourname@example.com"
+            required
+          />
+        </div>
 
-          <button onClick={handleCheckout} style={styles.checkoutBtn}>
-            <CreditCard size={18} style={{ marginRight: 6 }} />
-            Proceed to Checkout
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Full Address</label>
+          <textarea
+            name="address"
+            value={details.address}
+            onChange={handleChange}
+            style={styles.textarea}
+            placeholder="House No, Street, Landmark..."
+            required
+          />
+        </div>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>State</label>
+          <select
+            name="state"
+            value={details.state}
+            onChange={handleChange}
+            style={styles.select}
+            required
+          >
+            <option value="">Select your state</option>
+            {statesOfIndia.map((st) => (
+              <option key={st} value={st}>{st}</option>
+            ))}
+          </select>
+        </div>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Delivery Option</label>
+          <select
+            name="deliveryOption"
+            value={details.deliveryOption}
+            onChange={handleChange}
+            style={styles.select}
+          >
+            <option value="free">Free (5–7 days)</option>
+            <option value="standard">Standard - ₹9.99 (3–5 days)</option>
+            <option value="express">Express - ₹49.99 (1–2 days)</option>
+          </select>
+        </div>
+
+        <div style={styles.buttonGroup}>
+          <button onClick={handleSave} style={styles.secondaryBtn}>Save</button>
+          <button onClick={handleCheckout} style={styles.primaryBtn}>
+            Proceed to Payment
           </button>
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
 const styles = {
-  container: {
-    margin: "30px auto",
-    padding: "20px",
-    maxWidth: "500px",
-    border: "1px solid #ccc",
-    borderRadius: "10px",
-    backgroundColor: "#f9f9f9",
+  wrapper: {
+    display: "flex",
+    justifyContent: "center",
+    padding: "40px 20px",
+    backgroundColor: "#f6f7f9",
+    minHeight: "100vh",
   },
-  input: {
+  card: {
     width: "100%",
-    padding: "10px",
-    fontSize: "16px",
-    borderRadius: "6px",
-    border: "1px solid #ccc",
+    maxWidth: "600px",
+    backgroundColor: "#ffffff",
+    padding: "30px",
+    borderRadius: "12px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+  },
+  title: {
+    display: "flex",
+    alignItems: "center",
+    fontSize: "24px",
+    fontWeight: "600",
     marginBottom: "10px",
   },
-  textarea: {
-    width: "100%",
-    minHeight: "80px",
-    padding: "10px",
-    fontSize: "16px",
-    borderRadius: "6px",
-    border: "1px solid #ccc",
-    marginBottom: "10px",
+  subtitle: {
+    fontSize: "14px",
+    color: "#555",
+    marginBottom: "25px",
+  },
+  formGroup: {
+    marginBottom: "20px",
   },
   label: {
     display: "block",
+    fontWeight: "500",
     marginBottom: "6px",
-    fontWeight: "bold",
+    fontSize: "14px",
+  },
+  input: {
+    width: "100%",
+    padding: "12px",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    fontSize: "15px",
+  },
+  textarea: {
+    width: "100%",
+    padding: "12px",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    fontSize: "15px",
+    resize: "vertical",
+    minHeight: "100px",
   },
   select: {
     width: "100%",
-    padding: "10px",
-    fontSize: "16px",
-    borderRadius: "6px",
-    marginBottom: "15px",
-  },
-  button: {
     padding: "12px",
-    fontSize: "16px",
-    backgroundColor: "#007bff",
-    color: "white",
-    border: "none",
+    fontSize: "15px",
     borderRadius: "8px",
-    cursor: "pointer",
-    marginBottom: "20px",
+    border: "1px solid #ccc",
   },
-  summaryBox: {
-    padding: "15px",
-    backgroundColor: "#fff",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    marginTop: "20px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  },
-  checkoutBtn: {
-    marginTop: "15px",
-    padding: "12px 18px",
-    backgroundColor: "#28a745",
-    color: "white",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
+  buttonGroup: {
     display: "flex",
-    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: "30px",
+    gap: "10px",
+  },
+  secondaryBtn: {
+    flex: 1,
+    padding: "12px",
+    backgroundColor: "#e0e0e0",
+    color: "#333",
+    border: "none",
+    borderRadius: "8px",
+    fontWeight: "500",
+    cursor: "pointer",
+  },
+  primaryBtn: {
+    flex: 2,
+    padding: "12px",
+    backgroundColor: "#28a745",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    fontWeight: "600",
+    cursor: "pointer",
   },
 };
 

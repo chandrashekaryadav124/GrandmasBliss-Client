@@ -4,11 +4,13 @@ import { useNavigate } from "react-router-dom";
 const OrderConfirmation = () => {
   const [shippingInfo, setShippingInfo] = useState(null);
   const [orderedItems, setOrderedItems] = useState([]);
+  const [invoiceNumber, setInvoiceNumber] = useState("");
+  const [timestamp, setTimestamp] = useState("");
   const navigate = useNavigate();
   const invoiceRef = useRef();
 
   useEffect(() => {
-    const storedShipping = localStorage.getItem("shippingInfo");
+    const storedShipping = localStorage.getItem("shipmentDetails");
     const storedCart = localStorage.getItem("cart");
 
     if (storedShipping) {
@@ -18,39 +20,56 @@ const OrderConfirmation = () => {
     if (storedCart) {
       setOrderedItems(JSON.parse(storedCart));
     }
+
+    // Generate invoice number and timestamp
+    const generatedInvoice = "INV-" + Math.floor(100000 + Math.random() * 900000);
+    const dateNow = new Date().toLocaleString();
+    setInvoiceNumber(generatedInvoice);
+    setTimestamp(dateNow);
   }, []);
 
   const handlePrint = () => {
-    window.print(); // Native browser print (also has Save as PDF)
+    window.print(); // Native browser print / save as PDF
   };
 
   return (
     <div style={styles.container}>
       <div ref={invoiceRef}>
         <h1 style={styles.heading}>🎉 Order Confirmed!</h1>
-        <p style={styles.message}>Thank you for your purchase. Your order has been placed successfully.</p>
+        <p style={styles.message}>
+          Thank you for your purchase. Your order has been placed successfully.
+        </p>
+
+        <div style={styles.detailsBox}>
+          <h2 style={styles.subHeading}>🧾 Invoice Details</h2>
+          <p><strong>Invoice Number:</strong> {invoiceNumber}</p>
+          <p><strong>Date & Time:</strong> {timestamp}</p>
+        </div>
 
         {shippingInfo && (
           <div style={styles.detailsBox}>
             <h2 style={styles.subHeading}>📦 Shipping Information</h2>
             <p><strong>Name:</strong> {shippingInfo.fullName}</p>
-            <p><strong>Address:</strong> {shippingInfo.address}, {shippingInfo.city}</p>
-            <p><strong>Postal Code:</strong> {shippingInfo.postalCode}</p>
+            <p><strong>Email:</strong> {shippingInfo.email}</p>
             <p><strong>Phone:</strong> {shippingInfo.phone}</p>
+            <p><strong>Address:</strong> {shippingInfo.address}, {shippingInfo.city}</p>
+            <p><strong>State:</strong> {shippingInfo.state}</p>
+            <p><strong>Delivery Type:</strong> {shippingInfo.deliveryOption}</p>
           </div>
         )}
 
         {orderedItems.length > 0 && (
           <div style={styles.orderBox}>
-            <h2 style={styles.subHeading}>🧾 Ordered Items</h2>
+            <h2 style={styles.subHeading}>🛒 Ordered Items</h2>
             {orderedItems.map((item) => (
               <div key={item.id} style={styles.itemCard}>
                 <img src={item.imageUrl} alt={item.name} style={styles.image} />
                 <div>
                   <h3 style={{ margin: 0 }}>{item.name}</h3>
                   <p style={{ margin: "4px 0" }}>{item.description}</p>
-                  <p>Price: Rs {item.price.toFixed(2)}</p>
+                  <p>Price: ₹{item.price.toFixed(2)}</p>
                   <p>Quantity: {item.quantity}</p>
+                  <p>Total: ₹{(item.price * item.quantity).toFixed(2)}</p>
                 </div>
               </div>
             ))}
@@ -74,38 +93,38 @@ const styles = {
     minHeight: "100vh",
   },
   heading: {
-    fontSize: "2rem",
+    fontSize: "2.5rem",
     color: "#10b981",
   },
   message: {
     marginTop: "0.5rem",
-    fontSize: "1.1rem",
+    fontSize: "1.2rem",
     color: "#374151",
   },
   detailsBox: {
     marginTop: "2rem",
     padding: "1.5rem",
     backgroundColor: "#fff",
-    borderRadius: "8px",
+    borderRadius: "10px",
     textAlign: "left",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
     width: "100%",
-    maxWidth: "500px",
+    maxWidth: "600px",
     marginInline: "auto",
   },
   orderBox: {
     marginTop: "2rem",
     padding: "1.5rem",
     backgroundColor: "#fff",
-    borderRadius: "8px",
+    borderRadius: "10px",
     textAlign: "left",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
     width: "100%",
-    maxWidth: "700px",
+    maxWidth: "800px",
     marginInline: "auto",
   },
   subHeading: {
-    fontSize: "1.25rem",
+    fontSize: "1.5rem",
     color: "#1f2937",
     marginBottom: "1rem",
   },
@@ -117,8 +136,8 @@ const styles = {
     paddingBottom: "1rem",
   },
   image: {
-    width: "80px",
-    height: "80px",
+    width: "90px",
+    height: "90px",
     objectFit: "cover",
     borderRadius: "8px",
   },
@@ -133,19 +152,21 @@ const styles = {
     backgroundColor: "#f59e0b",
     color: "white",
     border: "none",
-    padding: "0.75rem 1.5rem",
+    padding: "0.8rem 1.6rem",
     borderRadius: "6px",
     fontSize: "1rem",
     cursor: "pointer",
+    transition: "background-color 0.3s",
   },
   backBtn: {
     backgroundColor: "#3b82f6",
     color: "white",
     border: "none",
-    padding: "0.75rem 1.5rem",
+    padding: "0.8rem 1.6rem",
     borderRadius: "6px",
     fontSize: "1rem",
     cursor: "pointer",
+    transition: "background-color 0.3s",
   },
 };
 
