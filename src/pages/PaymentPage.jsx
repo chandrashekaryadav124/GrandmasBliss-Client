@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaCreditCard, FaMoneyBillWave } from "react-icons/fa";
 
 const PaymentPage = () => {
   const [total, setTotal] = useState(0);
@@ -8,6 +9,9 @@ const PaymentPage = () => {
   const [tax, setTax] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [cardDetails, setCardDetails] = useState({ number: "", expiry: "", cvv: "" });
+  const [upiId, setUpiId] = useState("");
+  const [wallet, setWallet] = useState("Paytm");
+  const [bank, setBank] = useState("HDFC");
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const navigate = useNavigate();
@@ -15,29 +19,33 @@ const PaymentPage = () => {
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
+    const quantityMultiplier = {
+      "500gm": 1,
+      "1kg": 2,
+      "2kg": 4,
+    };
+
     const calculatedSubtotal = cart.reduce((acc, item) => {
       const price = parseFloat(item.price) || 0;
-      const quantity = item.quantity || 1;
-      return acc + price * quantity;
+      const multiplier = quantityMultiplier[item.quantity] || 1;
+      const unitCount = item.unitCount || 1;
+      return acc + price * multiplier * unitCount;
     }, 0);
 
-    const savedShipment = JSON.parse(localStorage.getItem("shipmentDetails"));
-    const calculatedShipping = savedShipment?.shippingCost ?? (calculatedSubtotal > 1000 ? 0 : 9.99);
+    const savedShipment = JSON.parse(localStorage.getItem("shipmentDetails")) || {};
+    const calculatedShipping = parseFloat(savedShipment.shippingCost) || (calculatedSubtotal > 1000 ? 0 : 9.99);
     const calculatedTax = calculatedSubtotal * 0.1;
+
+    const totalAmount = calculatedSubtotal + calculatedShipping + calculatedTax;
 
     setSubtotal(calculatedSubtotal);
     setShipping(calculatedShipping);
     setTax(calculatedTax);
-    setTotal(calculatedSubtotal + calculatedShipping + calculatedTax);
+    setTotal(totalAmount);
 
     const savedPaymentMethod = localStorage.getItem("paymentMethod");
     if (savedPaymentMethod) setPaymentMethod(savedPaymentMethod);
   }, []);
-
-  const handlePaymentMethodChange = (method) => {
-    setPaymentMethod(method);
-    localStorage.setItem("paymentMethod", method);
-  };
 
   const handlePayment = (e) => {
     e.preventDefault();
@@ -59,37 +67,40 @@ const PaymentPage = () => {
     return number && expiry && cvv;
   };
 
+  const isUpiValid = () => upiId.includes("@");
+
   return (
     <div style={styles.container}>
-      <h2>Select Payment Method</h2>
+      <h2 style={styles.header}>Secure Payment</h2>
       <div style={styles.breakdown}>
         <p>Subtotal: ₹{subtotal.toFixed(2)}</p>
         <p>Shipping: ₹{shipping.toFixed(2)}</p>
         <p>Tax: ₹{tax.toFixed(2)}</p>
         <h3>Total: ₹{total.toFixed(2)}</h3>
       </div>
+
       <form onSubmit={handlePayment} style={styles.form}>
-        <div style={styles.radioGroup}>
-          <label>
-            <input
-              type="radio"
-              value="card"
-              checked={paymentMethod === "card"}
-              onChange={() => handlePaymentMethodChange("card")}
-            />
-            Credit / Debit Card
-          </label>
-          <label>
-            <input
-              type="radio"
-              value="cod"
-              checked={paymentMethod === "cod"}
-              onChange={() => handlePaymentMethodChange("cod")}
-            />
-            Cash on Delivery (COD)
-          </label>
+        {/* Payment Tabs */}
+        <div style={styles.paymentTabs}>
+          {["card", "upi", "netbanking", "wallet", "cod"].map((method) => (
+            <button
+              type="button"
+              key={method}
+              onClick={() => setPaymentMethod(method)}
+              style={{
+                ...styles.tabButton,
+                backgroundColor: paymentMethod === method ? "#4CAF50" : "#eee",
+                color: paymentMethod === method ? "#fff" : "#333",
+              }}
+            >
+              {method === "card" && <FaCreditCard style={{ marginRight: 8 }} />}
+              {method === "cod" && <FaMoneyBillWave style={{ marginRight: 8 }} />}
+              {method.toUpperCase()}
+            </button>
+          ))}
         </div>
 
+        {/* Conditional Form Fields */}
         {paymentMethod === "card" && (
           <>
             <input
@@ -116,11 +127,53 @@ const PaymentPage = () => {
           </>
         )}
 
+        {paymentMethod === "upi" && (
+          <input
+            placeholder="Enter UPI ID (e.g., yourname@upi)"
+            required
+            style={styles.input}
+            value={upiId}
+            onChange={(e) => setUpiId(e.target.value)}
+          />
+        )}
+
+        {paymentMethod === "netbanking" && (
+          <select
+            value={bank}
+            onChange={(e) => setBank(e.target.value)}
+            style={styles.input}
+            required
+          >
+            <option value="HDFC">HDFC</option>
+            <option value="SBI">SBI</option>
+            <option value="ICICI">ICICI</option>
+            <option value="AXIS">AXIS</option>
+            <option value="KOTAK">KOTAK</option>
+          </select>
+        )}
+
+        {paymentMethod === "wallet" && (
+          <select
+            value={wallet}
+            onChange={(e) => setWallet(e.target.value)}
+            style={styles.input}
+            required
+          >
+            <option value="Paytm">Paytm</option>
+            <option value="Amazon Pay">Amazon Pay</option>
+            <option value="PhonePe">PhonePe</option>
+            <option value="Mobikwik">Mobikwik</option>
+          </select>
+        )}
+
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
           <button
             type="submit"
             style={styles.button}
-            disabled={paymentMethod === "card" && !isCardPaymentValid()}
+            disabled={
+              (paymentMethod === "card" && !isCardPaymentValid()) ||
+              (paymentMethod === "upi" && !isUpiValid())
+            }
           >
             {paymentMethod === "cod"
               ? `Place COD Order ₹${total.toFixed(2)}`
@@ -150,28 +203,46 @@ const PaymentPage = () => {
 
 const styles = {
   container: {
-    maxWidth: "400px",
+    maxWidth: "480px",
     margin: "40px auto",
-    padding: "20px",
-    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-    borderRadius: "8px",
+    padding: "24px",
+    boxShadow: "0 0 12px rgba(0,0,0,0.1)",
+    borderRadius: "10px",
     backgroundColor: "#fff",
+    fontFamily: "sans-serif",
+  },
+  header: {
+    fontSize: "22px",
+    marginBottom: "16px",
+    textAlign: "center",
+    color: "#333",
   },
   breakdown: {
     marginBottom: "20px",
     fontSize: "16px",
-    lineHeight: "1.5",
+    lineHeight: "1.6",
+    borderBottom: "1px solid #eee",
+    paddingBottom: "10px",
   },
   form: {
     display: "flex",
     flexDirection: "column",
     gap: "16px",
   },
-  radioGroup: {
+  paymentTabs: {
     display: "flex",
-    flexDirection: "column",
     gap: "10px",
-    fontSize: "16px",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginBottom: "10px",
+  },
+  tabButton: {
+    padding: "10px 14px",
+    borderRadius: "6px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "600",
   },
   input: {
     padding: "10px",
@@ -209,6 +280,7 @@ const styles = {
     boxShadow: "0 0 10px rgba(0,0,0,0.3)",
     borderRadius: "8px",
     zIndex: 1000,
+    textAlign: "center",
   },
   confirmButton: {
     padding: "10px 20px",

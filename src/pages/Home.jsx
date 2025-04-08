@@ -3,6 +3,8 @@ import "./Home.css";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from 'react-hot-toast';
+
 
 const products = [
   {
@@ -117,7 +119,10 @@ Shop Now</button>
         <div className="home-cta-content">
           <h2>Send a Box of Bliss!</h2>
           <p>Celebrate festivals and occasions with Grandma’s Bliss Gift Boxes</p>
-          <button className="home-gift-btn">Gift Now</button>
+          <button className="home-gift-btn" onClick={() => toast("🎁 Gifts are coming soon! Stay tuned.")}>
+  Gift Now
+</button>
+
         </div>
       </section>
 
@@ -169,6 +174,8 @@ Shop Now</button>
           </motion.div>
         )}
       </AnimatePresence>
+      <Toaster position="top-right" reverseOrder={false} />
+
     </div>
   );
 };
