@@ -1,87 +1,93 @@
 import { useState, useEffect } from "react";
 import { Package, Trash2, PencilLine } from "lucide-react";
 import "./AdminDashboard.css";
+import axios from "axios";
+
+const API_BASE_URL = "http://localhost:8080/api";
 
 const AdminDashboard = () => {
-  const [categories, setCategories] = useState(() => {
-    const savedCategories = localStorage.getItem("categories");
-    return savedCategories ? JSON.parse(savedCategories) : ["Sweets", "Pickles"];
-  });
-
-  const [products, setProducts] = useState(() => {
-    const savedProducts = localStorage.getItem("products");
-    return savedProducts ? JSON.parse(savedProducts) : [];
-  });
-
+  const [products, setProducts] = useState([]);
   const [formData, setFormData] = useState({
     id: "",
     name: "",
     price: "",
     description: "",
     imageUrl: "",
-    category: "Sweets",
-    quantity: "500gm", // Default quantity
+    type: "",
   });
-
   const [editing, setEditing] = useState(false);
-  const [newCategory, setNewCategory] = useState("");
-
-  const quantityOptions = ["250gm", "500gm", "1kg", "2kg", "5kg"];
+  const [filterType, setFilterType] = useState("");
 
   useEffect(() => {
-    localStorage.setItem("products", JSON.stringify(products));
-    localStorage.setItem("categories", JSON.stringify(categories));
-  }, [products, categories]);
+    fetchProducts();
+  }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const updatedProduct = { ...formData, price: parseFloat(formData.price) };
-
-    if (editing) {
-      setProducts((prevProducts) =>
-        prevProducts.map((p) => (p.id === formData.id ? updatedProduct : p))
-      );
-      setEditing(false);
-    } else {
-      const newProduct = {
-        ...updatedProduct,
-        id: Date.now().toString(),
-      };
-      setProducts((prevProducts) => [...prevProducts, newProduct]);
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get(`${API_BASE_URL}/products`);
+      setProducts(res.data);
+    } catch (err) {
+      console.error("Failed to fetch products:", err);
     }
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const payload = {
+      name: formData.name,
+      price: parseFloat(formData.price),
+      description: formData.description,
+      imageUrl: formData.imageUrl,
+      type: formData.type,
+    };
+
+    try {
+      if (editing) {
+        await axios.put(`${API_BASE_URL}/products/${formData.id}`, payload);
+      } else {
+        await axios.post(`${API_BASE_URL}/products`, payload);
+      }
+      fetchProducts();
+      resetForm();
+    } catch (err) {
+      console.error("Error saving product:", err);
+    }
+  };
+
+  const resetForm = () => {
     setFormData({
       id: "",
       name: "",
       price: "",
       description: "",
       imageUrl: "",
-      category: "Sweets",
-      quantity: "500gm",
+      type: "",
     });
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      setProducts((prevProducts) => prevProducts.filter((p) => p.id !== id));
-    }
+    setEditing(false);
   };
 
   const handleEdit = (product) => {
     setFormData({
       ...product,
       price: product.price.toString(),
-      id: product.id,
     });
     setEditing(true);
   };
 
-  const addCategory = () => {
-    if (newCategory.trim() && !categories.includes(newCategory)) {
-      setCategories([...categories, newCategory.trim()]);
-      setNewCategory("");
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      try {
+        await axios.delete(`${API_BASE_URL}/products/${id}`);
+        fetchProducts();
+      } catch (err) {
+        console.error("Error deleting product:", err);
+      }
     }
   };
+
+  const filteredProducts = filterType
+    ? products.filter((p) => p.type === filterType)
+    : products;
 
   return (
     <div className="container">
@@ -101,26 +107,14 @@ const AdminDashboard = () => {
             required
           />
 
-          <label>Price</label>
+          <label>Price (₹)</label>
           <input
             type="number"
+            step="0.01"
             value={formData.price}
             onChange={(e) => setFormData({ ...formData, price: e.target.value })}
             required
-            step="0.01"
           />
-
-          <label>Quantity</label>
-          <select
-            value={formData.quantity}
-            onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-          >
-            {quantityOptions.map((q) => (
-              <option key={q} value={q}>
-                {q}
-              </option>
-            ))}
-          </select>
 
           <label>Description</label>
           <textarea
@@ -137,31 +131,30 @@ const AdminDashboard = () => {
             required
           />
 
-          <label>Category</label>
+          <label>Product Type</label>
           <select
-            value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            value={formData.type}
+            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+            required
           >
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
+            <option value="">Select Type</option>
+            <option value="sweets">Sweets</option>
+            <option value="veg-pickle">Veg Pickle</option>
+            <option value="nonveg-pickle">Non-Veg Pickle</option>
           </select>
 
           <button type="submit">{editing ? "Update Product" : "Add Product"}</button>
         </form>
+      </div>
 
-        <div className="category-section">
-          <h3>Add New Category</h3>
-          <input
-            type="text"
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
-            placeholder="Enter category name"
-          />
-          <button onClick={addCategory}>Add Category</button>
-        </div>
+      <div className="filter-section">
+        <label>Filter by Type: </label>
+        <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+          <option value="">All</option>
+          <option value="sweets">Sweets</option>
+          <option value="veg-pickle">Veg Pickle</option>
+          <option value="nonveg-pickle">Non-Veg Pickle</option>
+        </select>
       </div>
 
       <div className="table-container">
@@ -172,26 +165,24 @@ const AdminDashboard = () => {
               <th>Image</th>
               <th>Name</th>
               <th>Price</th>
-              <th>Quantity</th>
-              <th>Category</th>
+              <th>Type</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
+            {filteredProducts.map((p) => (
+              <tr key={p.id}>
                 <td>
-                  <img src={product.imageUrl} alt={product.name} />
+                  <img src={p.imageUrl} alt={p.name} width="50" />
                 </td>
-                <td>{product.name}</td>
-                <td>Rs{product.price.toFixed(2)}</td>
-                <td>{product.quantity}</td>
-                <td>{product.category}</td>
+                <td>{p.name}</td>
+                <td>₹{p.price.toFixed(2)}</td>
+                <td>{p.type || "-"}</td>
                 <td className="action-buttons">
-                  <button className="edit-btn" onClick={() => handleEdit(product)}>
+                  <button className="edit-btn" onClick={() => handleEdit(p)}>
                     <PencilLine />
                   </button>
-                  <button className="delete-btn" onClick={() => handleDelete(product.id)}>
+                  <button className="delete-btn" onClick={() => handleDelete(p.id)}>
                     <Trash2 />
                   </button>
                 </td>
