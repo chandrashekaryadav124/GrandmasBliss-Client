@@ -1,19 +1,14 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
-  const [category, setCategory] = useState("");
+  const [type, setType] = useState("");
   const [quantities, setQuantities] = useState({});
-
-  useEffect(() => {
-    const savedProducts = localStorage.getItem("products");
-    if (savedProducts) {
-      setProducts(JSON.parse(savedProducts));
-    }
-  }, []);
+  const [zoomedImage, setZoomedImage] = useState(null);
 
   const quantityMultiplier = {
     "500gm": 1,
@@ -21,10 +16,32 @@ const ProductsPage = () => {
     "2kg": 4,
   };
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/products");
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape") setZoomedImage(null);
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, []);
+
   const addToCart = (product) => {
     const selectedQty = quantities[product.id] || "500gm";
     const multiplier = quantityMultiplier[selectedQty];
-    const priceWithQty = product.price * multiplier;
+    const priceWithQty = (product.price || 0) * multiplier;
 
     const productWithQty = {
       ...product,
@@ -42,19 +59,22 @@ const ProductsPage = () => {
     setQuantities((prev) => ({ ...prev, [productId]: value }));
   };
 
+  const handleImageClick = (url) => setZoomedImage(url);
+
   const filteredProducts = products.filter((product) => {
     const selectedQty = quantities[product.id] || "500gm";
-    const multiplier = quantityMultiplier[selectedQty];
-    const totalPrice = product.price * multiplier;
+    const multiplier = quantityMultiplier[selectedQty] || 1;
+    const price = product.price || 0;
+    const totalPrice = price * multiplier;
 
     return (
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
       (maxPrice === "" || totalPrice <= parseFloat(maxPrice)) &&
-      (category === "" || product.category === category)
+      (type === "" || product.type?.toLowerCase() === type.toLowerCase())
     );
   });
 
-  const categories = [...new Set(products.map((product) => product.category))];
+  const uniqueTypes = [...new Set(products.map((product) => product.type).filter(Boolean))];
 
   return (
     <Container>
@@ -67,20 +87,16 @@ const ProductsPage = () => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-
         <input
           type="number"
           placeholder="Max Price"
           value={maxPrice}
           onChange={(e) => setMaxPrice(e.target.value)}
         />
-
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
-          <option value="">All Categories</option>
-          {categories.map((cat, index) => (
-            <option key={index} value={cat}>
-              {cat}
-            </option>
+        <select value={type} onChange={(e) => setType(e.target.value)}>
+          <option value="">All Types</option>
+          {uniqueTypes.map((t, index) => (
+            <option key={index} value={t}>{t}</option>
           ))}
         </select>
       </Filters>
@@ -89,28 +105,28 @@ const ProductsPage = () => {
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => {
             const selectedQty = quantities[product.id] || "500gm";
-            const multiplier = quantityMultiplier[selectedQty];
-            const adjustedPrice = product.price * multiplier;
+            const multiplier = quantityMultiplier[selectedQty] || 1;
+            const adjustedPrice = (product.price || 0) * multiplier;
 
             return (
               <ProductCard key={product.id}>
-                <img src={product.imageUrl} alt={product.name} />
+                <img
+                  src={product.imageUrl}
+                  alt={product.name}
+                  onClick={() => handleImageClick(product.imageUrl)}
+                  style={{ cursor: "zoom-in" }}
+                />
                 <h3>{product.name}</h3>
                 <p>{product.description}</p>
-
                 <strong>Rs {adjustedPrice.toFixed(2)}</strong>
-
                 <select
                   value={selectedQty}
-                  onChange={(e) =>
-                    handleQuantityChange(product.id, e.target.value)
-                  }
+                  onChange={(e) => handleQuantityChange(product.id, e.target.value)}
                 >
                   <option value="500gm">500gm</option>
                   <option value="1kg">1kg</option>
                   <option value="2kg">2kg</option>
                 </select>
-
                 <AddToCartButton onClick={() => addToCart(product)}>
                   Add to Cart
                 </AddToCartButton>
@@ -121,6 +137,68 @@ const ProductsPage = () => {
           <NoResults>No products found.</NoResults>
         )}
       </ProductGrid>
+
+      <AnimatePresence>
+        {zoomedImage && (
+          <motion.div
+            className="modal-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setZoomedImage(null)}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.8)",
+              zIndex: 999,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ position: "relative", maxWidth: "90%", maxHeight: "90%" }}
+            >
+              <img
+                src={zoomedImage}
+                alt="Zoomed"
+                style={{
+                  maxHeight: "80vh",
+                  borderRadius: "10px",
+                  boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
+                  objectFit: "contain",
+                }}
+              />
+              <button
+                onClick={() => setZoomedImage(null)}
+                style={{
+                  position: "absolute",
+                  top: "-12px",
+                  right: "-12px",
+                  background: "#ef4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "36px",
+                  height: "36px",
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                ×
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Container>
   );
 };
@@ -139,7 +217,8 @@ const Filters = styled.div`
   justify-content: center;
   margin-bottom: 1rem;
 
-  input, select {
+  input,
+  select {
     padding: 0.5rem;
     border: 1px solid #d1d5db;
     border-radius: 0.375rem;
@@ -147,7 +226,8 @@ const Filters = styled.div`
     width: 200px;
   }
 
-  input:focus, select:focus {
+  input:focus,
+  select:focus {
     outline: none;
     border-color: #4f46e5;
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
